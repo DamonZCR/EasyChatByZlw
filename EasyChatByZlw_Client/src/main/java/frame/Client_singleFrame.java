@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -61,7 +60,6 @@ public class Client_singleFrame extends JFrame implements ActionListener, KeyLis
 		WinCenter.center(this);
 		setTitle(title);
 		setSize(400, 400);
-		setResizable(false);
 		setContentPane(createContentPanel());
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -128,7 +126,7 @@ public class Client_singleFrame extends JFrame implements ActionListener, KeyLis
 				//拼凑要发送的消息。
 				// index是发起单独聊天时，窗口左上角的对方用户名称对应记录用户名List中的序号。
 				int index = client.username_online.indexOf(this.getTitle());
-				String info = client.username + "@single" + client.getThreadID() + "@single" +
+				String info = client.username + "@single" + client.getUserId() + "@single" +
 								(int)client.clientuserid.get(index) + "@single" + 
 								mess + "@single";
 				try {

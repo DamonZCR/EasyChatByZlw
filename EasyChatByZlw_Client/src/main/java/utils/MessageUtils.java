@@ -25,5 +25,12 @@ public class MessageUtils {
         return res;
     }
 
+    // 封装离线消息
+    public String LeaveMess(int userId){
+        String sms = JSON.toJSONString(new LeaveMes(userId));
+        String res = JSON.toJSONString(new Message("LeaveMes", sms));
+        return res;
+    }
+
 
 }

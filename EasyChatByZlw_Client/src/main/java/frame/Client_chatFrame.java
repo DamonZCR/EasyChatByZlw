@@ -3,7 +3,6 @@ package frame;
 import com.alibaba.fastjson.JSON;
 import main.Client;
 import message.LoginResMes;
-import message.Message;
 import message.NotifyUserStatusMes;
 import message.SmsMes;
 
@@ -15,8 +14,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -278,7 +275,7 @@ public class Client_chatFrame extends JFrame implements ActionListener,
 			// 本地用户列表为空，最新的用户列表除了本客户端的其他全部客户端加入用户名列表和线程id列表
 			System.out.println("本地用户为空我正在全部加入新的用户列表！");
 			for (int i = 0; i < users.length; i++) {
-				if (users[i] != client.getThreadID()) {
+				if (users[i] != client.getUserId()) {
 					client.username_online.add(0, "用户" + users[i]);
 					client.clientuserid.add(0, users[i]);
 				}

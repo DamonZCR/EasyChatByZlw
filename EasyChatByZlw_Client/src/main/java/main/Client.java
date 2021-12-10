@@ -4,17 +4,13 @@ import com.alibaba.fastjson.JSON;
 import frame.Client_chatFrame;
 import frame.Client_enterFrame;
 import frame.Client_singleFrame;
-import message.LoginMes;
 import message.Message;
 import utils.MessageUtils;
 import utils.Utils;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,12 +29,12 @@ public class Client extends Thread{
 
 	private boolean flag_exit = false;
 	
-	private int threadID;
+	private int userId;
 	
 	public Map<String, Client_singleFrame> c_singleFrames;
 	public  List<String> username_online;//list数组存储在线客户端用户名
 	public  List<Integer> clientuserid;//用户ID
-	public String username = null;
+	public int username = 0;
 	public String chat_re;
 	
 	//getter, setter方法
@@ -67,11 +63,11 @@ public class Client extends Thread{
 		this.utils = utils;
 	}
 
-	public int getThreadID() {
-		return threadID;
+	public int getUserId() {
+		return userId;
 	}
-	public void setThreadID(int threadID) {
-		this.threadID = threadID;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 	//添加无参构造方法，如没有构造方法，无参的构造方法系统也会自动添加
 	public Client(){
@@ -89,7 +85,7 @@ public class Client extends Thread{
 	}
 	
 	//Client_enterFrame类登录启动客户端时调用
-	public String login(String username, String hostIp, String hostPort) {
+	public String login(int username, String pwd, String hostIp, String hostPort) {
 		this.username = username;
 		String login_mess = null;
 		mesus = new MessageUtils();
@@ -108,9 +104,9 @@ public class Client extends Thread{
 		// 序列化登录信息
 
 		utils = new Utils(c_socket);//初始化数据输入和数据输出流
-		threadID = 2;//这里的线程ID设为手动假设，可以再优化时由服务器分发。
+		userId = username;//这里的线程ID设为手动假设，可以再优化时由服务器分发。
 		try{
-			utils.WritePkg(mesus.LogInMess(threadID, "2", username));
+			utils.WritePkg(mesus.LogInMess(userId, pwd, ""));
 		}catch (InterruptedException e){
 			System.out.println("登录时发生错误:" + e);
 		}
@@ -171,7 +167,7 @@ public class Client extends Thread{
 	//IO流的方式通过socket传递给ClientThread
 	public void transMess(String text) {
 		try {
-			utils.WritePkg(mesus.SmsMess(text, threadID));
+			utils.WritePkg(mesus.SmsMess(text, userId));
 		} catch (InterruptedException e) {
 			System.out.println("transMess()发送信息时错误:" + e);
 		}
@@ -179,15 +175,12 @@ public class Client extends Thread{
 	//Client_chatFrame中的按钮事件actionPerformed调用
 	//IO流的方式通过socket传递给ClientThread
 	public void exitChat() {
-		//try {
-			//dos.writeUTF(username + "@exit" + getThreadID() + "@exit");
-			flag_exit = false;
-			System.exit(0);
-		//} catch (IOException e) {
-			//e.printStackTrace();
-		//}
-	}
-	public void exitLogin() {
+		flag_exit = false;
+		try {
+			utils.WritePkg(mesus.LeaveMess(userId));
+		} catch (InterruptedException e) {
+			System.out.println("exitChat()发送离线信息时错误:" + e);
+		}
 		System.exit(0);
 	}
 	public void exitClient() {

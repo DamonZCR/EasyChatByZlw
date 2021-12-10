@@ -4,21 +4,14 @@ import main.Client;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
-
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
-public class Client_enterFrame extends JFrame implements ActionListener, KeyListener{
-	public Client_enterFrame(Client client) {
+public class Client_registerFrame extends JFrame implements ActionListener, KeyListener{
+	public Client_registerFrame(Client client) {
 		this.client = client;//将传来的client赋值给本类成员变量
 		try {
 			//这是把外观设置成你所使用的平台的外观,程序在哪个平台运行,显示的窗口,对话框外观将是哪个平台的外观
