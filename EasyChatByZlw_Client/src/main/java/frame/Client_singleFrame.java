@@ -35,13 +35,14 @@ public class Client_singleFrame extends JFrame implements ActionListener, KeyLis
 	private static JTextArea jta_disMess;
 	private JTextField jtf_inputMess;
 	private JButton jbt_trans;
-	
 	public int userThreadID = 0;
-	
 	private Client client;
-	public Client_singleFrame(Client client, String title) {
+	private int toUserId;
+
+	public Client_singleFrame(Client client, String title, int toUserId) {
 		this.client = client;
 		init(title);
+		this.toUserId= toUserId;
 	}
 
 	private void init(String title) {
@@ -123,14 +124,9 @@ public class Client_singleFrame extends JFrame implements ActionListener, KeyLis
 				// 客户端窗口自己输出这个消息。
 				jta_disMess.append(mess + "\n");
 				jta_disMess.setCaretPosition(jta_disMess.getText().length());
-				//拼凑要发送的消息。
-				// index是发起单独聊天时，窗口左上角的对方用户名称对应记录用户名List中的序号。
-				int index = client.username_online.indexOf(this.getTitle());
-				String info = client.username + "@single" + client.getUserId() + "@single" +
-								(int)client.clientuserid.get(index) + "@single" + 
-								mess + "@single";
+
 				try {
-					client.utils.WritePkg(info);
+					client.utils.WritePkg(client.mesus.SingleChatMess(toUserId, client.getUserId(), mess));
 				} catch (InterruptedException e1) {
 					System.out.println("单独聊天信息发送错误:" + e1);
 				}
@@ -145,6 +141,7 @@ public class Client_singleFrame extends JFrame implements ActionListener, KeyLis
 
 	public void closeSingleFrame(){
 		setExitNotify();
+		client.c_singleFrames.remove(this.getTitle(), client.c_singleFrames);//本地移除这个私聊窗口记录。
 		setVisible(false);
 	}
 

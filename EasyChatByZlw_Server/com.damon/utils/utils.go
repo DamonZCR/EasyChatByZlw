@@ -29,10 +29,10 @@ func (this *Transfer) ReadPkg() (mes message.Message, err error) {
 	//根据buf[:4] 转成一个 uint32类型
 	var pkgLen uint32
 	pkgLen = binary.LittleEndian.Uint32(this.Buf[0:4])
-	fmt.Println(pkgLen)
+	//fmt.Println(pkgLen)
 	//根据 pkgLen 读取消息内容
 	n, err := this.Conn.Read(this.Buf[:pkgLen])
-	fmt.Println(this.Buf[:pkgLen])
+	//fmt.Println(this.Buf[:pkgLen])
 	if n != int(pkgLen) || err != nil {
 		//err = errors.New("read pkg body error")
 		return

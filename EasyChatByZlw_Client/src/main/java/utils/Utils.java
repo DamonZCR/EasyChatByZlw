@@ -67,7 +67,7 @@ public class Utils {
 
         if (reaLen != len){
             System.out.println("ReadPkg()数据接收长度错误！");
-            mess = "-----错误信息-----";
+            mess = "false";
         }else {
             // 接收到的数据与要发送的大致匹配，可以转换。
             // String 的构造方法的一种，指定字符集。

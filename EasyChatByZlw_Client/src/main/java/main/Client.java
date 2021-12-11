@@ -24,7 +24,7 @@ public class Client extends Thread{
 	private Client_chatFrame c_chatFrame;
 	private Client_enterFrame c_enterFrame;
 	private Client_singleFrame c_singleFrame;
-	private MessageUtils mesus;
+	public MessageUtils mesus;
 	private Message mess;
 	public Utils utils;
 
@@ -35,7 +35,7 @@ public class Client extends Thread{
 	public Map<String, Client_singleFrame> c_singleFrames;
 	public  List<String> username_online;//list数组存储在线客户端用户名
 	public  List<Integer> clientuserid;//用户ID
-	public int username = 0;
+	public String username;
 	public String chat_re;
 	
 	//getter, setter方法
@@ -87,10 +87,9 @@ public class Client extends Thread{
 	}
 	
 	//Client_enterFrame类登录启动客户端时调用
-	public String login(int username, String pwd, String hostIp, String hostPort) {
-		this.username = username;
+	public String login(int userId, String pwd, String hostIp, String hostPort) {
 		String login_mess = null;
-
+		this.username = "用户" + userId;
 		try {
 			c_socket = new Socket(hostIp, Integer.parseInt(hostPort));
 		} catch (NumberFormatException e) {
@@ -106,7 +105,7 @@ public class Client extends Thread{
 		// 序列化登录信息
 
 		utils = new Utils(c_socket);//初始化数据输入和数据输出流
-		userId = username;//这里的线程ID设为手动假设，可以再优化时由服务器分发。
+		this.userId = userId;//这里的线程ID设为手动假设，可以再优化时由服务器分发。
 		try{
 			utils.WritePkg(mesus.LogInMess(userId, pwd, ""));
 		}catch (InterruptedException e){
@@ -133,7 +132,12 @@ public class Client extends Thread{
 				flag_exit = false;
 				System.out.println("Client线程接收信息时错误:" + e);
 			}
-			System.out.println(chat_re);
+			if (chat_re.equals("false")){
+				System.out.println("消息传输错误！");
+				if (c_socket.isClosed())
+					System.exit(0);
+				continue;
+			}
 			mess = JSON.parseObject(chat_re, Message.class);//将接收的字符串反序列化为Message对象。
 			// 从输入流中读到的数据不为空。
 			if(!mess.getType().isEmpty()){
@@ -203,6 +207,11 @@ public class Client extends Thread{
 			utils.WritePkg(mesus.LeaveMess(userId));
 		} catch (InterruptedException e) {
 			System.out.println("exitChat()发送离线信息时错误:" + e);
+		}
+		try {
+			c_socket.close();
+		} catch (IOException e) {
+			System.out.println("exitChat()关闭Socket时错误:" + e);
 		}
 		System.exit(0);
 	}

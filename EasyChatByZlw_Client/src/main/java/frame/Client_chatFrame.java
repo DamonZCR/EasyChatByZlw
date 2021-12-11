@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import main.Client;
 import message.LoginResMes;
 import message.NotifyUserStatusMes;
+import message.SingleChatMes;
 import message.SmsMes;
 
 import java.awt.Font;
@@ -14,6 +15,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -142,6 +145,9 @@ public class Client_chatFrame extends JFrame implements ActionListener,
 				JOptionPane.showMessageDialog(this, "不能发送空消息");
 				jtf_inputMess.setText("");
 			} else {
+				SimpleDateFormat form = new SimpleDateFormat("yyyy-MM-dd  HH:mm");
+				String date = form.format(new Date());
+				mess = client.username + "  " + date + "\n" + mess;
 				client.transMess(mess);//传送消息
 			}
 		}
@@ -159,7 +165,8 @@ public class Client_chatFrame extends JFrame implements ActionListener,
 				JOptionPane.showMessageDialog(this, "您未选择聊天对象\n请选择要单独聊天的对象");
 			} else {
 				if (!client.c_singleFrames.containsKey(user_names)) {
-					createSingleChatFrame(user_names);
+					int i = client.username_online.indexOf(user_names);
+					createSingleChatFrame(user_names, client.clientuserid.get(i));
 				} else {
 					client.c_singleFrames.get(user_names)
 							.setFocusableWindowState(true);
@@ -186,13 +193,10 @@ public class Client_chatFrame extends JFrame implements ActionListener,
 	}
 	
 	//客户端聊天文本框展示信息
-	//展示消息格式为：用户ID + 服务器端接收到的时间 + “\n(下一行)” + 显示的消息
+	//展示消息格式为：用户名ID + 客户端发送的时间 + “\n(下一行)” + 显示的消息
 	public void setDisMess(String text) {
 		SmsMes smsMes = JSON.parseObject(text, SmsMes.class);
-		StringBuilder sb = new StringBuilder(smsMes.getUser().getUserId());
-		sb.append("(Time)\n");
-		sb.append(smsMes.getContent());
-		jta_disMess.append(sb + "\n");
+		jta_disMess.append(smsMes.getContent() + "\n");
 		jta_disMess.setCaretPosition(jta_disMess.getText().length());
 	}
 
@@ -303,9 +307,9 @@ public class Client_chatFrame extends JFrame implements ActionListener,
 		if (e.getSource() == jlt_disUsers) {
 		}
 	}
-
-	public void createSingleChatFrame(String name) {
-		Client_singleFrame c_singlFrame = new Client_singleFrame(client, name);
+	//创建一个私聊的窗口，name属性为对方的名字，将作为窗口名，toUserId将作为目标用户的ID号。
+	public void createSingleChatFrame(String name, int toUserId) {
+		Client_singleFrame c_singlFrame = new Client_singleFrame(client, name, toUserId);
 		client.c_singleFrames.put(name, c_singlFrame);
 		try {
 			c_singlFrame.userThreadID = client.clientuserid
@@ -317,13 +321,15 @@ public class Client_chatFrame extends JFrame implements ActionListener,
 	}
 
 	public void setSingleFrame(String chat_re) {
-		String[] infos = chat_re.split("@single");
+		SingleChatMes scm = JSON.parseObject(chat_re, SingleChatMes.class);
+		//scm.getSms().getUser().getUserId()代表这个私聊消息发送方的用户ID
+		String singleName = "用户" + scm.getSms().getUser().getUserId();
 		try {
-			if (client.c_singleFrames.containsKey(infos[0])) {
-				client.c_singleFrames.get(infos[0]).setDisMess(infos[3]);
+			if (client.c_singleFrames.containsKey(singleName)) {//如果已经开启了与此用户的私聊窗口
+				client.c_singleFrames.get(singleName).setDisMess(scm.getSms().getContent());
 			} else {
-				createSingleChatFrame(infos[0]);
-				client.c_singleFrames.get(infos[0]).setDisMess(infos[3]);
+				createSingleChatFrame(singleName, scm.getSms().getUser().getUserId());//否则新建窗口，并展示。
+				client.c_singleFrames.get(singleName).setDisMess(scm.getSms().getContent());
 			}
 		} catch (Exception e) {
 		}

@@ -26,7 +26,7 @@ public class MessageUtils {
         return res;
     }
     // 封装私聊信息消息
-    public String SingleChatMes(int toUserId, int userId, String content){
+    public String SingleChatMess(int toUserId, int userId, String content){
         String singleMes = JSON.toJSONString(new SingleChatMes(toUserId,
                 new SmsMes(content, new User(userId, "","",1,""))));
         String res = JSON.toJSONString(new Message("SingleChatMes", singleMes));

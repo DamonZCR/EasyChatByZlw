@@ -67,6 +67,10 @@ func (this *Processor) serverProcessMes(mes *message.Message) (err error) {
 		//创建一个SmsProcess实例完成转发群聊消息.
 		smsProcess := &process2.SmsProcess{}
 		smsProcess.SendGroupMes(mes)
+	case message.SingleChatMesType:
+		//创建一个SmsProcess实例完成转发群聊消息.
+		smsProcess := &process2.SmsProcess{}
+		smsProcess.SendSingleMes(mes)
 	case message.LeaveMesType:
 		//创建一个SmsProcess实例完成转发群聊消息.
 		up := &process2.UserProcess{

@@ -23,13 +23,13 @@ func (this *SmsProcess) SendGroupMes(mes *message.Message) {
 	var smsMes message.SmsMes
 	err := json.Unmarshal([]byte(mes.Data), &smsMes)
 	if err != nil {
-		fmt.Println("json.Unmarshal err=", err)
+		fmt.Println("json.Unmarshal SendGroupMes err=", err)
 		return
 	}
 
 	data, err := json.Marshal(mes)
 	if err != nil {
-		fmt.Println("json.Marshal err=", err)
+		fmt.Println("json.Marshal SendGroupMes err=", err)
 		return
 	}
 
@@ -41,6 +41,30 @@ func (this *SmsProcess) SendGroupMes(mes *message.Message) {
 		this.SendMesToEachOnlineUser(data, up.Conn)
 	}
 }
+func (this *SmsProcess) SendSingleMes(mes *message.Message) {
+	var singleMes message.SingleChatMes
+	err := json.Unmarshal([]byte(mes.Data), &singleMes)
+	if err != nil {
+		fmt.Println("json.Unmarshal SendSingleMes err=", err)
+		return
+	}
+
+	toUser := userMgr.onlineUsers[singleMes.ToUserId]
+	data, err := json.Marshal(mes)
+	if err != nil {
+		fmt.Println("json.Marshal SendSingleMes err=", err)
+		return
+	}
+
+	tf := &utils.Transfer{
+		Conn: toUser.Conn, //
+	}
+	err = tf.WritePkg(data)
+	if err != nil {
+		fmt.Println("转发私聊消息时失败 err=", err)
+	}
+}
+
 func (this *SmsProcess) SendMesToEachOnlineUser(data []byte, conn net.Conn) {
 
 	//创建一个Transfer 实例，发送data

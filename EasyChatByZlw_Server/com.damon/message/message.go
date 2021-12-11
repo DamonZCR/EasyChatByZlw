@@ -7,6 +7,7 @@ const (
 	RegisterResMesType      = "RegisterResMes"
 	NotifyUserStatusMesType = "NotifyUserStatusMes"
 	SmsMesType              = "SmsMes"
+	SingleChatMesType       = "SingleChatMes"
 	LeaveMesType            = "LeaveMes"
 )
 
@@ -60,7 +61,7 @@ type SmsMes struct {
 
 //私聊的消息类型，包括目标的用户，发送者发送的SmsMes
 type SingleChatMes struct {
-	ToUserId string `json:"toUserId"` //目标用户
+	ToUserId int    `json:"toUserId"` //目标用户
 	Sms      SmsMes `json:"sms"`      //私聊消息的内容
 }
 

@@ -22,7 +22,7 @@ func (this *UserProcess) NotifyOtherOffLine(mes *message.Message) (err error) {
 	var offMes message.LeaveMes
 	err = json.Unmarshal([]byte(mes.Data), &offMes)
 	if err != nil {
-		fmt.Println("json.Unmarshal fail err=", err)
+		fmt.Println("json.Unmarshal fail NotifyOtherOffLine err=", err)
 		return
 	}
 	userMgr.DelOnlineUser(offMes.UserId) //在服务器端的在线列表删除这个用户
