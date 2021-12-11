@@ -6,13 +6,19 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.Inet4Address;
+import java.io.IOException;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
 public class Client_registerFrame extends JFrame implements ActionListener, KeyListener{
+	public static void main(String[] args) {
+		Client client = new Client();
+		Client_registerFrame crg = new Client_registerFrame(client);
+		crg.setVisible(true);
+	}
 	public Client_registerFrame(Client client) {
-		this.client = client;//将传来的client赋值给本类成员变量
+		this.client = client;
 		try {
 			//这是把外观设置成你所使用的平台的外观,程序在哪个平台运行,显示的窗口,对话框外观将是哪个平台的外观
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -45,11 +51,11 @@ public class Client_registerFrame extends JFrame implements ActionListener, KeyL
 		lblNewLabel.setBounds(33, 30, 81, 34);
 		getContentPane().add(lblNewLabel);
 		//用户ID输入框
-		jtf_username = new JTextField();
-		jtf_username.addKeyListener(this);
-		jtf_username.setBounds(124, 30, 143, 34);
-		getContentPane().add(jtf_username);
-		jtf_username.setColumns(10);
+		jtf_userId = new JTextField();
+		jtf_userId.addKeyListener(this);
+		jtf_userId.setBounds(124, 30, 143, 34);
+		getContentPane().add(jtf_userId);
+		jtf_userId.setColumns(10);
 
 		//设置标签：密码
 		JLabel pwlNewLabel = new JLabel("\u5BC6\u7801");
@@ -64,46 +70,39 @@ public class Client_registerFrame extends JFrame implements ActionListener, KeyL
 		getContentPane().add(jtf_pwd);
 		jtf_pwd.setColumns(10);
 
-		//设置标签：‘服务器地址’
-		JLabel lblNewLabel_1 = new JLabel("\u670D\u52A1\u5668\u5730\u5740");
+		//设置标签：‘用户名’
+		JLabel lblNewLabel_1 = new JLabel("\u7528\u6237\u540D");
 		lblNewLabel_1.setFont(new Font("宋体", Font.PLAIN, 14));
 		lblNewLabel_1.setBounds(33, 118, 81, 34);
 		getContentPane().add(lblNewLabel_1);
-		//设置IP地址栏
-		jtf_hostIp = new JTextField();
-		jtf_hostIp.setBounds(124, 118, 143, 34);
-		jtf_hostIp.addKeyListener(this);
-		getContentPane().add(jtf_hostIp);
-		try {
-			//获取本地主机IP
-			//getLocalHost()返回：本地主机的 IP 地址。getHostAddress();返回字符串格式的原始 IP 地址。
-			String ip = (String)Inet4Address.getLocalHost().getHostAddress();
-			jtf_hostIp.setText(ip);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		jtf_hostIp.setColumns(10);
-		// 端口号
-		JLabel lblNewLabel_2 = new JLabel("\u7AEF\u53E3\u53F7");
+		//设置用户名栏，默认为：用户
+		jtf_username = new JTextField();
+		jtf_username.setBounds(124, 118, 143, 34);
+		jtf_username.addKeyListener(this);
+		getContentPane().add(jtf_username);
+		jtf_username.setText("用户");
+		jtf_username.setColumns(10);
+		// 性别
+		JLabel lblNewLabel_2 = new JLabel("\u6027\u522B");
 		lblNewLabel_2.setFont(new Font("宋体", Font.PLAIN, 14));
 		lblNewLabel_2.setBounds(33, 162, 81, 34);
 		getContentPane().add(lblNewLabel_2);
 		// 端口号输入面板
-		jtf_hostPort = new JTextField();
-		jtf_hostPort.addKeyListener(this);
-		jtf_hostPort.setBounds(124, 162, 143, 34);
-		getContentPane().add(jtf_hostPort);
-		jtf_hostPort.setText("8889");
-		jtf_hostPort.setColumns(10);
-		//进入聊天室
-		jbt_enter = new JButton("\u8FDB\u5165\u804A\u5929\u5BA4");
+		jtf_sex = new JTextField();
+		jtf_sex.addKeyListener(this);
+		jtf_sex.setBounds(124, 162, 143, 34);
+		getContentPane().add(jtf_sex);
+		jtf_sex.setText("未知");
+		jtf_sex.setColumns(10);
+		//注册
+		jbt_enter = new JButton("\u6CE8\u518C");
 		jbt_enter.addActionListener(this);
 		jbt_enter.addKeyListener(this);
 		jbt_enter.setFont(new Font("宋体", Font.PLAIN, 14));
 		jbt_enter.setBounds(33, 206, 108, 39);
 		getContentPane().add(jbt_enter);
-		//退出聊天室
-		jbt_exit = new JButton("\u9000\u51FA\u804A\u5929\u5BA4");
+		//退出
+		jbt_exit = new JButton("\u9000\u51FA");
 		jbt_exit.setFont(new Font("宋体", Font.PLAIN, 14));
 		jbt_exit.setBounds(154, 206, 113, 39);
 		jbt_exit.addActionListener(this);
@@ -114,13 +113,28 @@ public class Client_registerFrame extends JFrame implements ActionListener, KeyL
 	 * 添加事件监听。
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField jtf_username;
+	private JTextField jtf_userId;
 	private JPasswordField jtf_pwd;
-	private JTextField jtf_hostIp;
-	private JTextField jtf_hostPort;
+	private JTextField jtf_username;
+	private JTextField jtf_sex;
 	private JButton jbt_enter;
 	private JButton jbt_exit;
 	private Client client;
+	private Client_enterFrame c_enterFrame;
+
+	public Client_enterFrame getC_enterFrame() {
+		return c_enterFrame;
+	}
+	public void setC_enterFrame(Client_enterFrame c_enterFrame) {
+		this.c_enterFrame = c_enterFrame;
+	}
+
+	public Client getClient() {
+		return client;
+	}
+	public void setClient(Client client) {
+		this.client = client;
+	}
 
 	//按钮动作监听
 	@Override
@@ -128,36 +142,45 @@ public class Client_registerFrame extends JFrame implements ActionListener, KeyL
 		//如果点击的是退出聊天
 		if(e.getSource() == jbt_exit){
 			setVisible(false);
-			client.exitChat();
+			client.exitClient();
 		}
 		//点击登录聊天
 		if(e.getSource() == jbt_enter){
 			//获取输入的用户名、IP和端口号
-			String userStr = jtf_username.getText();
+			String userStr = jtf_userId.getText();
 			userStr.trim();
 			String pwd = new String(jtf_pwd.getPassword());
-			String hostIp = jtf_hostIp.getText();
-			hostIp.trim();
-			String hostPort = jtf_hostPort.getText();
-			hostPort.trim();
+			String username = jtf_username.getText();
+			username.trim();
+			String sex = jtf_sex.getText();
+			sex.trim();
 			if(isInteger(userStr)){
-				int username = Integer.parseInt(userStr);
+				int userId = Integer.parseInt(userStr);
 				if (!pwd.equals("")){
-					if(!hostIp.equals("")){
-						if(!hostPort.equals("")){
-							//执行登录。
-							String login_mess = client.login(username, pwd, hostIp, hostPort);
-							if(login_mess.equals("true")){//socket注册成功
-								this.setVisible(false);//登录窗口消失
-								client.showChatFrame(userStr);//用户ID到聊天窗口
+					if(!username.equals("")){
+						if(!sex.equals("")){
+							//执行注册。
+							boolean login_mess = false;
+							try {
+								login_mess = client.register(userId, pwd, username, sex);
+							} catch (IOException | InterruptedException interruptedException) {
+								interruptedException.printStackTrace();
+							}
+
+							if(login_mess){//注册成功
+								this.setVisible(false);//窗口消失
+								c_enterFrame = new Client_enterFrame(client);
+								client.setC_enterFrame(c_enterFrame);//注入到本类中
+								//使窗口可见，Client_enterFrame继承的JFrame自带方法
+								c_enterFrame.setVisible(true);
 							}else{
-								JOptionPane.showMessageDialog(this, login_mess);
+								JOptionPane.showMessageDialog(this, "服务器连接错误！");
 							}
 						}else{
-							JOptionPane.showMessageDialog(this, "服务器连接端口号不能为空！");
+							JOptionPane.showMessageDialog(this, "性别不能为空！");
 						}
 					}else{
-						JOptionPane.showMessageDialog(this, "服务器地址不能为空！");
+						JOptionPane.showMessageDialog(this, "用户名不能为空！");
 					}
 				}else {
 					JOptionPane.showMessageDialog(this, "密码不能为空！");
@@ -176,6 +199,7 @@ public class Client_registerFrame extends JFrame implements ActionListener, KeyL
 		Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
 		return pattern.matcher(str).matches();
 	}
+
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		if(arg0.getKeyCode() == KeyEvent.VK_ENTER){

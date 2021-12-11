@@ -189,7 +189,7 @@ public class Client_chatFrame extends JFrame implements ActionListener,
 	//展示消息格式为：用户ID + 服务器端接收到的时间 + “\n(下一行)” + 显示的消息
 	public void setDisMess(String text) {
 		SmsMes smsMes = JSON.parseObject(text, SmsMes.class);
-		StringBuilder sb = new StringBuilder(smsMes.getUserId());
+		StringBuilder sb = new StringBuilder(smsMes.getUser().getUserId());
 		sb.append("(Time)\n");
 		sb.append(smsMes.getContent());
 		jta_disMess.append(sb + "\n");

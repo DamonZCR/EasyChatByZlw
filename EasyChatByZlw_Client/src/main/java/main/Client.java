@@ -8,6 +8,7 @@ import message.Message;
 import utils.MessageUtils;
 import utils.Utils;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -74,6 +75,7 @@ public class Client extends Thread{
 		c_singleFrames = new HashMap<String, Client_singleFrame>();
 		username_online = new ArrayList<String>();
 		clientuserid = new ArrayList<Integer>();
+		mesus = new MessageUtils();//发送消息的封装方法，登录和注册中都需要使用。
 	}
 	
 	public static void main(String[] args) {
@@ -88,7 +90,7 @@ public class Client extends Thread{
 	public String login(int username, String pwd, String hostIp, String hostPort) {
 		this.username = username;
 		String login_mess = null;
-		mesus = new MessageUtils();
+
 		try {
 			c_socket = new Socket(hostIp, Integer.parseInt(hostPort));
 		} catch (NumberFormatException e) {
@@ -147,13 +149,13 @@ public class Client extends Thread{
 						if(mess.getType().equals("NotifyUserStatusMes")){//如果是某一人离线的消息通知
 							c_chatFrame.setUpDownUsers(mess.getData());//进行聊天用户的更新。
 						}else{
-							//以下暂未开放。
-							System.out.println("进入到暂未开放区域！");
-							if(chat_re.contains("@serverexit")){
-								c_chatFrame.closeClient();
+							if(mess.getType().equals("SingleChatMes")){
+								c_chatFrame.setSingleFrame(mess.getData());
 							}else{
-								if(chat_re.contains("@single")){
-									c_chatFrame.setSingleFrame(chat_re);
+								//以下暂未开放。
+								System.out.println("进入到暂未开放区域！");
+								if(chat_re.contains("关闭服务器了")){
+									c_chatFrame.closeClient();
 								}
 							}
 						}
@@ -162,6 +164,27 @@ public class Client extends Thread{
 			}//if结束
 		}//while循环结束。
 	}
+
+	public boolean register(int userId, String pwd,String username,String sex) throws InterruptedException, IOException {
+		try {
+			c_socket = new Socket("127.0.0.1", 8889);
+		} catch (Exception e) {
+			System.out.println("服务器连接错误！");
+			return false;
+		}
+		Thread.sleep(200);
+		try {
+			utils = new Utils(c_socket);//初始化数据输入和数据输出流
+			utils.WritePkg(mesus.RegisMess(userId, pwd, username,1,sex));
+		} catch (InterruptedException e) {
+			System.out.println("register()时错误:" + e);
+			c_socket.close();
+			return false;
+		}
+		c_socket.close();
+		return true;
+	}
+
 	//客户端传递群聊消息的方法
 	//Client_chatFrame中的按钮事件actionPerformed调用
 	//IO流的方式通过socket传递给ClientThread

@@ -135,7 +135,7 @@ public class Client_enterFrame extends JFrame implements ActionListener, KeyList
 		//如果点击的是退出聊天
 		if(e.getSource() == jbt_exit){
 			setVisible(false);
-			client.exitChat();
+			client.exitClient();
 		}
 		//点击登录聊天
 		if(e.getSource() == jbt_enter){

@@ -35,7 +35,7 @@ func (this *SmsProcess) SendGroupMes(mes *message.Message) {
 
 	for id, up := range userMgr.onlineUsers {
 		//这里，还需要过滤到自己,即不要再发给自己
-		if id == smsMes.UserId {
+		if id == smsMes.User.UserId {
 			//continue
 		}
 		this.SendMesToEachOnlineUser(data, up.Conn)

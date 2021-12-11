@@ -55,7 +55,13 @@ type NotifyUserStatusMes struct {
 //增加一个SmsMes //发送的消息
 type SmsMes struct {
 	Content string `json:"content"` //内容
-	User           //匿名结构体，继承
+	User    User   `json:"user"`    //匿名结构体，继承
+}
+
+//私聊的消息类型，包括目标的用户，发送者发送的SmsMes
+type SingleChatMes struct {
+	ToUserId string `json:"toUserId"` //目标用户
+	Sms      SmsMes `json:"sms"`      //私聊消息的内容
 }
 
 // 用户离线消息，有用户离线就会发送给服务器

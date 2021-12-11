@@ -38,7 +38,7 @@ public class FastJsonTest {
         System.out.println(lm.getUserName());
 
         // 将Java对象转为Json格式 2
-        String s2 = JSON.toJSONString(new SmsMes("-消息内容-", 1, "1", "Damon", 1,"11"));
+        String s2 = JSON.toJSONString(new SmsMes("-消息内容-", new User(1, "1", "Damon", 1,"11")));
         String s3 = JSON.toJSONString(new Message("LoginMes", s2));
         System.out.println(s3);
 

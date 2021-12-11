@@ -13,6 +13,7 @@ public class Utils {
     private  DataInputStream dis = null;
     private DataOutputStream dos = null;
     private FilterChinese fc = null;
+    public String s = "ceshi";
 
     public Utils(Socket c_socket) {
         try {

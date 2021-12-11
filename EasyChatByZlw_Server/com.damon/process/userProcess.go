@@ -20,7 +20,7 @@ type UserProcess struct {
 //用户发送的离线消息类型时LeaveMess,其中只包含用户的id.
 func (this *UserProcess) NotifyOtherOffLine(mes *message.Message) (err error) {
 	var offMes message.LeaveMes
-	err = json.Unmarshal([]byte(mes.Data), offMes)
+	err = json.Unmarshal([]byte(mes.Data), &offMes)
 	if err != nil {
 		fmt.Println("json.Unmarshal fail err=", err)
 		return
